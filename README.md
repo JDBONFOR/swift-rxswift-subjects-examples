@@ -8,11 +8,11 @@ RxSwift is the Swift-specific implementation of the Reactive Extensions standard
 [![5.2 Swift](https://img.shields.io/badge/Swift-5.2-green.svg)](https://github.com/Naereen/badges)
 [![14 iOS](https://img.shields.io/badge/iOS-13x+-blue.svg)](https://github.com/Naereen/badges)
 
-Inside RxSwiftSubjects.playground file, you found the diferents RxSwift subjects with example code.
+Inside RxSwiftSubjects.playground file, you found the different RxSwift subjects with example code.
 
 ## Details
 What is a Subject?
-The subject receive an event and it send to subcribers that was subcriber to him.
+The subject receive an event and it send to subscribers that was subscriber to him.
 
 ### Types of Subject
 - PublishSubject
@@ -82,6 +82,7 @@ subject.onNext("Update initial value")
 subject.subscribe { event in
     print(event)
 }
+.disposed(by: disposeBag)
 
 subject.onNext("Issue 1")
 ```
@@ -114,6 +115,7 @@ subject.onNext("Issue 3")
 subject.subscribe {
     print($0)
 }
+.disposed(by: disposeBag)
 
 subject.onNext("Issue 4")
 subject.onNext("Issue 5")
@@ -138,6 +140,7 @@ print("<---- New subscriber ---->")
 subject.subscribe{
     print($0)
 }
+.disposed(by: disposeBag)
 ```
 
 After the first subscriber was subcribed to the Relay three new events have ocurred.
@@ -152,4 +155,71 @@ next(Issue 6)
 ---
 
 #### BehaviorRelay
-In progress
+BehaviorRelay is a part of RxCocoa, so you need install and import it.
+In the example, we see how to work with Strings or Arrays in BehaviorRelay.
+
+```swift
+import UIKit
+import RxSwift
+import RxCocoa
+
+let disposeBag = DisposeBag()
+
+// Inicial value
+let relay = BehaviorRelay(value: "Initial Value")
+
+relay.asObservable()
+    .subscribe {
+        print($0)
+    }
+    .disposed(by: disposeBag)
+    
+// Assign new value
+relay.accept("Hello world!!")
+
+```
+In this case, the response in console is
+
+```swift
+next(Initial Value)
+next(Hello world!!)
+```
+
+To manage values on BehaviorRelay we can't change relay.value implicity. The correct method is .accept(value: _)
+
+But, what happens with array and when I need appends new elements? Ok, let me see you this example
+
+```swift
+import UIKit
+import RxSwift
+import RxCocoa
+
+let disposeBag = DisposeBag()
+
+// Working with Array on BehaviorRelay
+let relayArray = BehaviorRelay(value: [String]())
+
+// Assign new value
+relayArray.accept(relayArray.value + ["Item 1"])
+relayArray.accept(relayArray.value + ["Item 2"])
+relayArray.accept(relayArray.value + ["Item 3"])
+
+// Similar Idea to append elements to array is, duplicate value on to a variable
+
+var values = relayArray.value
+values.append("Item 4")
+values.append("Item 5")
+values.append("Item 6")
+
+relayArray.accept(values)
+
+relayArray.asObservable()
+    .subscribe {
+        print($0)
+    }
+    .disposed(by: disposeBag)
+```
+
+We can see in the example two ways to manipulate array inside BehaviorRelay.
+The first one is with .accept method and concatenate the existing value in Relay and new value.
+The second one is duplicating the relay.value and manage it outside how to a new simple array and then accept manipulated array.
