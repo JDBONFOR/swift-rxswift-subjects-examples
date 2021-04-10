@@ -223,3 +223,9 @@ relayArray.asObservable()
 We can see in the example two ways to manipulate array inside BehaviorRelay.
 The first one is with .accept method and concatenate the existing value in Relay and new value.
 The second one is duplicating the relay.value and manage it outside how to a new simple array and then accept manipulated array.
+
+Response in console
+
+```swift
+next(["Item 1", "Item 2", "Item 3", "Item 4", "Item 5", "Item 6"])
+```
